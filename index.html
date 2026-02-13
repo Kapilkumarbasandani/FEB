@@ -107,6 +107,7 @@
             justify-content: center;
             margin-top: 40px;
             flex-wrap: wrap;
+            position: relative;
         }
 
         button {
@@ -133,11 +134,16 @@
         #noBtn {
             background: linear-gradient(135deg, #ffa6c9 0%, #ff69b4 100%);
             color: white;
-            position: fixed;
+            position: relative;
             transition: all 0.2s ease;
             font-size: 1.1rem;
             padding: 12px 35px;
             z-index: 100;
+            display: inline-block;
+        }
+
+        #noBtn.moving {
+            position: fixed;
         }
 
         #noBtn:hover {
@@ -476,7 +482,7 @@
     <div class="modal" id="modal">
         <div class="modal-content">
             <h2>Yayyy! I knew it! ❤️🥰</h2>
-            <p>You've made me the happiest! 💕✨</p>
+            <p>I love you reetuu Come soon minie and kappu missing you 💕✨</p>
         </div>
     </div>
 
@@ -493,14 +499,40 @@
         const loveMusic = document.getElementById('loveMusic');
 
         // Make "No" button run away
+        let moveCount = 0;
+        
         noBtn.addEventListener('mouseenter', () => {
-            moveButton();
+            if (!noBtn.classList.contains('moving')) {
+                // First time - convert to fixed position WITHOUT moving
+                const rect = noBtn.getBoundingClientRect();
+                noBtn.classList.add('moving');
+                noBtn.style.left = rect.left + 'px';
+                noBtn.style.top = rect.top + 'px';
+                moveCount = 0;
+            } else {
+                moveCount++;
+                // Start moving from the second hover onwards
+                if (moveCount > 0) {
+                    moveButton();
+                }
+            }
         });
 
         // For touch devices
         noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            moveButton();
+            if (!noBtn.classList.contains('moving')) {
+                const rect = noBtn.getBoundingClientRect();
+                noBtn.classList.add('moving');
+                noBtn.style.left = rect.left + 'px';
+                noBtn.style.top = rect.top + 'px';
+                moveCount = 0;
+            } else {
+                moveCount++;
+                if (moveCount > 0) {
+                    moveButton();
+                }
+            }
         });
 
         function moveButton() {
@@ -509,52 +541,29 @@
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
 
-            // Calculate safe positions (with bigger margin to keep it in bounds)
-            const margin = 30;
-            const maxX = windowWidth - btnWidth - margin;
-            const maxY = windowHeight - btnHeight - margin;
+            // Get current position (use getBoundingClientRect for accuracy)
+            const rect = noBtn.getBoundingClientRect();
+            const currentX = rect.left;
+            const currentY = rect.top;
 
-            // Generate random position within safe bounds
-            const randomX = Math.max(margin, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(margin, Math.floor(Math.random() * maxY));
+            // Move a smaller random distance (40-100px) in a random direction
+            const distance = 40 + Math.random() * 60; // Random distance between 40-100px
+            const angle = Math.random() * Math.PI * 2; // Random angle
+            
+            let newX = currentX + Math.cos(angle) * distance;
+            let newY = currentY + Math.sin(angle) * distance;
+
+            // Keep within bounds
+            const margin = 30;
+            newX = Math.max(margin, Math.min(newX, windowWidth - btnWidth - margin));
+            newY = Math.max(margin, Math.min(newY, windowHeight - btnHeight - margin));
 
             // Apply new position
-            noBtn.style.left = randomX + 'px';
-            noBtn.style.top = randomY + 'px';
-        }
-
-        // Set initial position for "No" button
-        function setInitialNoPosition() {
-            const container = document.querySelector('.container');
-            const yesBtn = document.getElementById('yesBtn');
-            
-            if (!container || !yesBtn) return;
-            
-            const containerRect = container.getBoundingClientRect();
-            const yesBtnRect = yesBtn.getBoundingClientRect();
-            
-            // Check if mobile
-            const isMobile = window.innerWidth <= 768;
-            
-            if (isMobile) {
-                // Position below yes button on mobile, centered
-                const btnWidth = noBtn.offsetWidth || 120; // fallback width
-                noBtn.style.left = (yesBtnRect.left + yesBtnRect.width / 2 - btnWidth / 2) + 'px';
-                noBtn.style.top = (yesBtnRect.bottom + 20) + 'px';
-            } else {
-                // Position next to yes button on desktop (right side with small gap)
-                noBtn.style.left = (yesBtnRect.right + 20) + 'px';
-                noBtn.style.top = yesBtnRect.top + 'px';
-            }
+            noBtn.style.left = newX + 'px';
+            noBtn.style.top = newY + 'px';
         }
 
         // Initialize position on load
-        window.addEventListener('load', () => {
-            setTimeout(setInitialNoPosition, 100); // Small delay to ensure DOM is ready
-        });
-        window.addEventListener('resize', setInitialNoPosition);
-
-        // "Yes" button click
         yesBtn.addEventListener('click', () => {
             modal.style.display = 'flex';
             
