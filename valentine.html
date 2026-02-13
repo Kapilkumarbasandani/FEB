@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine? 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffd4e5 50%, #ffb3d9 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background Image Container */
+        .bg-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(255, 182, 193, 0.85) 0%, 
+                rgba(255, 192, 203, 0.75) 50%, 
+                rgba(255, 218, 224, 0.85) 100%);
+            z-index: 2;
+        }
+
+        .bg-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(8px);
+            z-index: 3;
+        }
+
+        .bg-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            filter: brightness(1.1) contrast(0.9);
+            z-index: 1;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.5);
+            max-width: 500px;
+            width: 90%;
+            animation: fadeIn 1s ease-in;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #ff1493;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.3);
+            line-height: 1.4;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #yesBtn {
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff1493 100%);
+            color: white;
+        }
+
+        #yesBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(255, 20, 147, 0.4);
+        }
+
+        #noBtn {
+            background: linear-gradient(135deg, #ffa6c9 0%, #ff69b4 100%);
+            color: white;
+            position: fixed;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+            padding: 12px 35px;
+        }
+
+        #noBtn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Popup/Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffe4f0 0%, #ffc4dd 100%);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.5);
+            animation: bounceIn 0.5s ease;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            font-size: 2rem;
+            color: #ff1493;
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            font-size: 1.3rem;
+            color: #ff69b4;
+        }
+
+        /* Heart Animation */
+        .heart {
+            position: fixed;
+            font-size: 30px;
+            animation: float 3s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-100px) rotate(180deg);
+                opacity: 0.7;
+            }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ff1493;
+            pointer-events: none;
+            z-index: 998;
+            animation: confettiFall 3s linear;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Party Popper Animation */
+        .party-popper {
+            position: fixed;
+            font-size: 50px;
+            pointer-events: none;
+            z-index: 999;
+            animation: popperRise 2s ease-out;
+        }
+
+        @keyframes popperRise {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-50vh) rotate(360deg) scale(1.2);
+            }
+            100% {
+                transform: translateY(-150vh) rotate(720deg) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* Celebration Images */
+        .celebration-image {
+            position: fixed;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.5);
+            pointer-events: none;
+            z-index: 999;
+            animation: imageFloat 3s ease-in-out;
+            border: 5px solid #fff;
+        }
+
+        @keyframes imageFloat {
+            0% {
+                transform: translateY(100vh) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            30% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(20vh) scale(1) rotate(10deg);
+            }
+            100% {
+                transform: translateY(-50vh) scale(0.5) rotate(-10deg);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 25px;
+            }
+
+            button {
+                padding: 15px 35px;
+                font-size: 1.2rem;
+                min-width: 120px;
+            }
+
+            #yesBtn {
+                font-size: 1.3rem;
+                padding: 18px 40px;
+            }
+
+            #noBtn {
+                font-size: 1rem;
+                padding: 12px 30px;
+            }
+
+            .container {
+                padding: 35px 25px;
+                width: 85%;
+            }
+
+            .buttons {
+                gap: 15px;
+                margin-top: 35px;
+            }
+
+            .modal-content {
+                padding: 45px 35px;
+                width: 85%;
+            }
+
+            .modal-content h2 {
+                font-size: 1.7rem;
+            }
+
+            .modal-content p {
+                font-size: 1.2rem;
+            }
+
+            .celebration-image {
+                width: 120px;
+                height: 120px;
+            }
+
+            .party-popper {
+                font-size: 40px;
+            }
+
+            .bg-heart {
+                font-size: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+                margin-bottom: 20px;
+            }
+
+            button {
+                padding: 14px 30px;
+                font-size: 1.1rem;
+            }
+
+            #yesBtn {
+                font-size: 1.2rem;
+                padding: 16px 35px;
+            }
+
+            #noBtn {
+                font-size: 0.95rem;
+                padding: 10px 25px;
+            }
+
+            .container {
+                padding: 25px 20px;
+                width: 90%;
+                border-radius: 20px;
+            }
+
+            .buttons {
+                gap: 12px;
+                margin-top: 30px;
+            }
+
+            .modal-content {
+                padding: 35px 25px;
+                width: 90%;
+                border-radius: 20px;
+            }
+
+            .modal-content h2 {
+                font-size: 1.4rem;
+                margin-bottom: 15px;
+            }
+
+            .modal-content p {
+                font-size: 1rem;
+            }
+
+            .celebration-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .party-popper {
+                font-size: 35px;
+            }
+
+            .heart {
+                font-size: 25px;
+            }
+
+            .bg-heart {
+                font-size: 25px;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            button {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+
+            #noBtn {
+                cursor: default;
+            }
+
+            #yesBtn:active {
+                transform: scale(0.95);
+            }
+        }
+
+        /* Floating hearts background */
+        .bg-heart {
+            position: fixed;
+            font-size: 40px;
+            opacity: 0.1;
+            pointer-events: none;
+            animation: floatBg 20s infinite;
+        }
+
+        @keyframes floatBg {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            50% {
+                transform: translateY(-50px) translateX(30px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Image -->
+    <div class="bg-image">
+        <!-- Replace 'your-image.jpg' with your actual image path -->
+        <img src="your-image.jpg" alt="Background" onerror="this.style.display='none'">
+    </div>
+
+    <!-- Background hearts -->
+    <div class="bg-heart" style="top: 10%; left: 10%; z-index: 5;">💕</div>
+    <div class="bg-heart" style="top: 20%; right: 15%; animation-delay: 2s; z-index: 5;">❤️</div>
+    <div class="bg-heart" style="bottom: 15%; left: 20%; animation-delay: 4s; z-index: 5;">💖</div>
+    <div class="bg-heart" style="bottom: 25%; right: 10%; animation-delay: 6s; z-index: 5;">💗</div>
+
+    <div class="container">
+        <h1>Reet, will you be my Valentine? ❤️</h1>
+        <div class="buttons">
+            <button id="yesBtn">Yes 💘</button>
+            <button id="noBtn">Close ✖️</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2>Yayyy! I knew it! ❤️🥰</h2>
+            <p>You've made me the happiest! 💕✨</p>
+        </div>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const modal = document.getElementById('modal');
+
+        // Make "No" button run away
+        noBtn.addEventListener('mouseenter', () => {
+            moveButton();
+        });
+
+        // For touch devices
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveButton();
+        });
+
+        function moveButton() {
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+
+            // Calculate safe positions (with margin)
+            const maxX = windowWidth - btnWidth - 20;
+            const maxY = windowHeight - btnHeight - 20;
+
+            // Generate random position
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            // Apply new position
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+        }
+
+        // Set initial position for "No" button
+        function setInitialNoPosition() {
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            
+            // Check if mobile
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Center horizontally, position below yes button on mobile
+                noBtn.style.left = (containerRect.left + containerRect.width / 2 - btnRect.width / 2) + 'px';
+                noBtn.style.top = (containerRect.top + containerRect.height - 80) + 'px';
+            } else {
+                // Original desktop positioning
+                noBtn.style.left = (containerRect.left + containerRect.width / 2 + 70) + 'px';
+                noBtn.style.top = (containerRect.top + containerRect.height - 100) + 'px';
+            }
+        }
+
+        // Initialize position on load
+        window.addEventListener('load', setInitialNoPosition);
+        window.addEventListener('resize', setInitialNoPosition);
+
+        // "Yes" button click
+        yesBtn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+            createHearts();
+            createConfetti();
+            createPartyPoppers();
+            createCelebrationImages();
+        });
+
+        // Create floating hearts
+        function createHearts() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.innerHTML = ['❤️', '💕', '💖', '💗', '💘'][Math.floor(Math.random() * 5)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.top = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    document.body.appendChild(heart);
+
+                    setTimeout(() => heart.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        // Create confetti
+        function createConfetti() {
+            const colors = ['#ff1493', '#ff69b4', '#ffc0cb', '#ff6b9d', '#ff85a2'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    
+                    // Random shapes
+                    if (Math.random() > 0.5) {
+                        confetti.style.borderRadius = '50%';
+                    }
+                    
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
+        // Create party poppers from bottom
+        function createPartyPoppers() {
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const popper = document.createElement('div');
+                    popper.className = 'party-popper';
+                    popper.innerHTML = '🎉';
+                    popper.style.left = (Math.random() * 90 + 5) + '%';
+                    popper.style.bottom = '-100px';
+                    popper.style.animationDelay = (Math.random() * 0.5) + 's';
+                    document.body.appendChild(popper);
+
+                    setTimeout(() => popper.remove(), 2500);
+                }, i * 150);
+            }
+        }
+
+        // Create celebration images
+        function createCelebrationImages() {
+            // Array of romantic/Valentine images (using placeholder service)
+            const imageUrls = [
+                'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=300&h=300&fit=crop', // Hearts
+                'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=300&h=300&fit=crop', // Flowers
+                'https://images.unsplash.com/photo-1529635698889-8f8f1b3c7f8e?w=300&h=300&fit=crop', // Red roses
+                'https://images.unsplash.com/photo-1455659817273-f96807779a3a?w=300&h=300&fit=crop', // Love letter
+                'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=300&h=300&fit=crop', // Hearts decoration
+            ];
+
+            imageUrls.forEach((url, index) => {
+                setTimeout(() => {
+                    const img = document.createElement('img');
+                    img.className = 'celebration-image';
+                    img.src = url;
+                    img.style.left = (Math.random() * 70 + 15) + '%';
+                    img.style.bottom = '-200px';
+                    img.style.animationDelay = (Math.random() * 0.3) + 's';
+                    document.body.appendChild(img);
+
+                    setTimeout(() => img.remove(), 3500);
+                }, index * 400);
+            });
+        }
+
+        // Close modal on click
+        modal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
