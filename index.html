@@ -501,13 +501,14 @@
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
 
-            // Calculate safe positions (with margin)
-            const maxX = windowWidth - btnWidth - 20;
-            const maxY = windowHeight - btnHeight - 20;
+            // Calculate safe positions (with bigger margin to keep it in bounds)
+            const margin = 30;
+            const maxX = windowWidth - btnWidth - margin;
+            const maxY = windowHeight - btnHeight - margin;
 
-            // Generate random position
-            const randomX = Math.floor(Math.random() * maxX);
-            const randomY = Math.floor(Math.random() * maxY);
+            // Generate random position within safe bounds
+            const randomX = Math.max(margin, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(margin, Math.floor(Math.random() * maxY));
 
             // Apply new position
             noBtn.style.left = randomX + 'px';
@@ -517,20 +518,22 @@
         // Set initial position for "No" button
         function setInitialNoPosition() {
             const container = document.querySelector('.container');
+            const yesBtn = document.getElementById('yesBtn');
             const containerRect = container.getBoundingClientRect();
-            const btnRect = noBtn.getBoundingClientRect();
+            const yesBtnRect = yesBtn.getBoundingClientRect();
+            const noBtnRect = noBtn.getBoundingClientRect();
             
             // Check if mobile
             const isMobile = window.innerWidth <= 768;
             
             if (isMobile) {
-                // Center horizontally, position below yes button on mobile
-                noBtn.style.left = (containerRect.left + containerRect.width / 2 - btnRect.width / 2) + 'px';
-                noBtn.style.top = (containerRect.top + containerRect.height - 80) + 'px';
+                // Position below yes button on mobile, centered
+                noBtn.style.left = (yesBtnRect.left + yesBtnRect.width / 2 - noBtnRect.width / 2) + 'px';
+                noBtn.style.top = (yesBtnRect.bottom + 15) + 'px';
             } else {
-                // Original desktop positioning
-                noBtn.style.left = (containerRect.left + containerRect.width / 2 + 70) + 'px';
-                noBtn.style.top = (containerRect.top + containerRect.height - 100) + 'px';
+                // Position next to yes button on desktop (right side with small gap)
+                noBtn.style.left = (yesBtnRect.right + 20) + 'px';
+                noBtn.style.top = yesBtnRect.top + 'px';
             }
         }
 
