@@ -479,10 +479,17 @@
         </div>
     </div>
 
+    <!-- Background Music -->
+    <audio id="loveMusic" preload="auto">
+        <source src="WhatsApp Ptt 2026-02-13 at 9.45.32 PM.ogg" type="audio/ogg">
+        Your browser does not support the audio element.
+    </audio>
+
     <script>
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const modal = document.getElementById('modal');
+        const loveMusic = document.getElementById('loveMusic');
 
         // Make "No" button run away
         noBtn.addEventListener('mouseenter', () => {
@@ -544,6 +551,11 @@
         // "Yes" button click
         yesBtn.addEventListener('click', () => {
             modal.style.display = 'flex';
+            
+            // Play romantic music
+            loveMusic.volume = 0.5; // Set volume to 50%
+            loveMusic.play().catch(e => console.log('Audio play failed:', e));
+            
             createHearts();
             createConfetti();
             createPartyPoppers();
