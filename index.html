@@ -552,7 +552,8 @@
         yesBtn.addEventListener('click', () => {
             modal.style.display = 'flex';
             
-            // Play romantic music
+            // Play romantic music (skip first 3 seconds)
+            loveMusic.currentTime = 3; // Start from 3 seconds
             loveMusic.volume = 0.5; // Set volume to 50%
             loveMusic.play().catch(e => console.log('Audio play failed:', e));
             
